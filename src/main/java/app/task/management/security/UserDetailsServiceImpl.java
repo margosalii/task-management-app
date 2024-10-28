@@ -13,9 +13,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-            () -> new EntityNotFoundException("Can't find user by email: " + email)
+    public UserDetails loadUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+            () -> new EntityNotFoundException("Can't find user by username: " + username)
         );
     }
 }
