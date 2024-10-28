@@ -6,6 +6,7 @@ import app.task.management.dto.user.UserRoleUpdateDto;
 import app.task.management.dto.user.UserUpdateDto;
 import app.task.management.exceptions.RegistrationException;
 import app.task.management.mapper.UserMapper;
+import app.task.management.model.Role;
 import app.task.management.model.RoleName;
 import app.task.management.model.User;
 import app.task.management.repository.RoleRepository;
@@ -48,7 +49,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find user by ID: " + id)
         );
-        userMapper.updateUserRoleFromDto(updateDto, user);
+        Role role = roleRepository.findByName(updateDto.getRole());
+        user.getRoles().add(role);
         userMapper.toDto(userRepository.save(user));
     }
 

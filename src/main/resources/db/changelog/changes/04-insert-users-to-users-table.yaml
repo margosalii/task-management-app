@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-users-to-users-table
+      author: root
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: 'juliasane'
+              - column:
+                  name: password
+                  value: '$2a$10$rGnJ2yAy8MKj46U76a7GYOuQW6VWF5Lhg6eZ4oaiGhBgzn.u.8bF2'
+              - column:
+                  name: email
+                  value: 'julia.sane@example.com'
+              - column:
+                  name: first_name
+                  value: 'Julia'
+              - column:
+                  name: last_name
+                  value: 'Sane'
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: 'finnrain'
+              - column:
+                  name: password
+                  value: '$2a$10$lGucgxLbUx5c5pZEVuMbk.MZboxp8uL7AQ4/iWpgQRJTYsU0MVv1C'
+              - column:
+                  name: email
+                  value: 'finn.rain@example.com'
+              - column:
+                  name: first_name
+                  value: 'Finn'
+              - column:
+                  name: last_name
+                  value: 'Rain'
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
