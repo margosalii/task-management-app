@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class EmailValidator implements ConstraintValidator<Email, String> {
     private static final String PATTERN_OF_EMAIL =
-        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+             "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext constraintValidatorContext) {
