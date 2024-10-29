@@ -11,3 +11,15 @@ databaseChangeLog:
       file: db/changelog/changes/05-insert-roles-to-roles-table.yaml
   - include:
       file: db/changelog/changes/06-insert-users-roles-to-table.yaml
+  - include:
+      file: db/changelog/changes/07-create-projects-table.yaml
+  - include:
+      file: db/changelog/changes/08-create-tasks-table.yaml
+  - include:
+      file: db/changelog/changes/09-create-comments-table.yaml
+  - include:
+      file: db/changelog/changes/10-create-attachments-table.yaml
+  - include:
+      file: db/changelog/changes/11-create-labels-table.yaml
+  - include:
+      file: db/changelog/changes/12-create-tasks-labels-table.yaml
