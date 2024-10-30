@@ -1,6 +1,6 @@
 package app.task.management.dto.task;
 
-import app.task.management.model.Label;
+import app.task.management.dto.label.LabelDto;
 import app.task.management.model.Priority;
 import app.task.management.model.Status;
 import java.time.LocalDate;
@@ -18,5 +18,5 @@ public class TaskDetailsDto {
     private LocalDate dueDate;
     private Long projectId;
     private Long assigneeId;
-    private Set<Label> labels;
+    private Set<LabelDto> labels;
 }
