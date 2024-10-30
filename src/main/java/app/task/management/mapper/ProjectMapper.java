@@ -9,7 +9,7 @@ import app.task.management.model.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, uses = TaskMapper.class)
 public interface ProjectMapper {
     ProjectDetailsResponseDto toProjectDetails(Project project);
 
