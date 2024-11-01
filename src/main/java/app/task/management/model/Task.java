@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -26,6 +27,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Setter
 @SQLDelete(sql = "UPDATE tasks SET is_deleted = true WHERE id =?")
 @SQLRestriction("is_deleted=false")
+@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,4 +65,8 @@ public class Task {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
+
+    public Task(Long id) {
+        this.id = id;
+    }
 }

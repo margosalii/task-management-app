@@ -29,3 +29,10 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_comments_tasks_comments
                     referencedColumnNames: id
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comments_users_comments
+                    referencedColumnNames: id
