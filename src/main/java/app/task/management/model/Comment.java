@@ -22,6 +22,10 @@ public class Comment {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
@@ -29,5 +33,5 @@ public class Comment {
     private String text;
 
     @Column(nullable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 }

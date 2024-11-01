@@ -13,7 +13,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(config = MapperConfig.class, uses = TaskMapper.class)
+@Mapper(config = MapperConfig.class)
 public interface LabelMapper {
     LabelResponseDto toDto(Label label);
 
