@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectRepository projectRepository;
 
     @Override
+    @Transactional
     public TaskDetailsDto save(Long userId, CreateTaskRequestDto requestDto) {
         Project project = projectRepository.findByUserIdAndId(
                 userId, requestDto.getProjectId()).orElseThrow(() -> new EntityNotFoundException(
@@ -55,6 +57,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskDetailsDto updateTask(Long userId, Long id, UpdateTaskDto requestDto) {
         Task task = taskRepository.findByAssigneeIdAndId(userId, id).orElseThrow(
                 () -> new EntityNotFoundException(String.format(
@@ -65,6 +68,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void delete(Long userId, Long id) {
         Task task = taskRepository.findByAssigneeIdAndId(userId, id).orElseThrow(
                 () -> new EntityNotFoundException(String.format(

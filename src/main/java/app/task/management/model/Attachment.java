@@ -26,11 +26,11 @@ public class Attachment {
     private Task task;
 
     @Column(name = "dropbox_file_id", nullable = false)
-    private String dropBoxFileId;
+    private String dropboxFileId;
 
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
     @Column(name = "upload_date", nullable = false)
-    private LocalDateTime uploadDate;
+    private LocalDateTime uploadDate = LocalDateTime.now();
 }

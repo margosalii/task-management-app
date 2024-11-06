@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDto updateUserInfo(Long id, UserUpdateDto updateDto) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find user by ID: " + id)
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUserRole(Long id, UserRoleUpdateDto updateDto) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find user by ID: " + id)
