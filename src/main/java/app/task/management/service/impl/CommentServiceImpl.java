@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class CommentServiceImpl implements CommentService {
     private final TaskRepository taskRepository;
 
     @Override
+    @Transactional
     public ResponseCommentDto save(Long userId, RequestCommentDto commentDto) {
         User user = userRepository.findById(userId).get();
         Comment comment = commentMapper.toModel(commentDto);

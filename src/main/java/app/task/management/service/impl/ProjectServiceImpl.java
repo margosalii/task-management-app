@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ProjectDetailsResponseDto save(Long userId, CreateProjectDto projectDto) {
         Project project = projectMapper.toModel(projectDto);
         project.setUser(userRepository.findById(userId).get());
@@ -46,6 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public ProjectDetailsResponseDto update(Long userId, Long id,
                                             UpdateRequestProjectDto projectDto) {
         Project project = projectRepository.findByUserIdAndId(userId, id).orElseThrow(
@@ -56,6 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public void delete(Long userId, Long id) {
         Project project = projectRepository.findByUserIdAndId(userId, id).orElseThrow(
                 () -> new EntityNotFoundException(String.format(

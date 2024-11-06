@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class LabelServiceImpl implements LabelService {
     private final TaskRepository taskRepository;
 
     @Override
+    @Transactional
     public LabelResponseDto save(CreateLabelDto createLabelDto) {
         Label label = labelMapper.toModel(createLabelDto);
         Set<Task> tasks = new HashSet<>(taskRepository.findAllById(createLabelDto.getTaskIds()));
@@ -43,6 +45,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
+    @Transactional
     public LabelResponseDto updateLabel(Long id, UpdateLabelDto labelDto) {
         Label label = labelRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find label with id: " + id));
@@ -51,6 +54,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         labelRepository.deleteById(id);
     }
