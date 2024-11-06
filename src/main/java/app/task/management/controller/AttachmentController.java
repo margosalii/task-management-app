@@ -3,6 +3,8 @@ package app.task.management.controller;
 import app.task.management.dto.attachment.AttachmentDto;
 import app.task.management.model.User;
 import app.task.management.service.AttachmentService;
+import app.task.management.service.EmailService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Positive;
 import java.io.IOException;
 import java.util.Set;
@@ -25,14 +27,24 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AttachmentController {
     private final AttachmentService attachmentService;
+    private final EmailService emailService;
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public AttachmentDto uploadAttachment(@RequestParam("file") MultipartFile file,
-                                          @RequestParam("taskId") Long taskId) throws IOException {
+                                          @RequestParam("taskId") Long taskId)
+            throws IOException, MessagingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((User) authentication.getPrincipal()).getId();
-        return attachmentService.upload(file, taskId, userId);
+        User user = (User) authentication.getPrincipal();
+        AttachmentDto attachment = attachmentService.upload(file, taskId, user.getId());
+        if (attachment != null) {
+            emailService.sendEmail(user.getEmail(), "Attachment was uploaded!",
+                    "Dear " + user.getUsername() + ", a new attachment: "
+                    + attachment.getFileName()
+                    + " to your task was successfully uploaded to Dropbox!"
+                    + " You can view all info about it in Task Management application.");
+        }
+        return attachment;
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
