@@ -8,28 +8,36 @@ import app.task.management.exceptions.RegistrationException;
 import app.task.management.security.AuthenticationService;
 import app.task.management.service.EmailService;
 import app.task.management.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Authentication management", description = "Endpoints for users authentication")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthenticationController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
 
+    @Operation(summary = "Register user", description = "Register a new user")
     @PostMapping("/login")
-    public UserLoginResponseDto login(@RequestBody UserLoginRequestDto loginRequestDto) {
+    public UserLoginResponseDto login(@Valid @RequestBody UserLoginRequestDto loginRequestDto) {
         return authenticationService.authenticate(loginRequestDto);
     }
 
+    @Operation(summary = "Login user", description = "Login an existing user")
     @PostMapping("/registration")
-    public UserDto registration(@RequestBody UserRegistrationDto registrationDto)
+    public UserDto registration(@Valid @RequestBody UserRegistrationDto registrationDto)
             throws RegistrationException, MessagingException {
         UserDto registered = userService.register(registrationDto);
         if (registered != null) {

@@ -7,6 +7,8 @@ import app.task.management.dto.project.UpdateRequestProjectDto;
 import app.task.management.model.User;
 import app.task.management.service.EmailService;
 import app.task.management.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Project management", description = "Endpoints for managing projects")
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class ProjectController {
     private final ProjectService projectService;
     private final EmailService emailService;
 
+    @Operation(summary = "Create project", description = "Create a new project")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ProjectDetailsResponseDto createProject(@RequestBody @Valid
@@ -50,6 +54,7 @@ public class ProjectController {
         return savedProject;
     }
 
+    @Operation(summary = "Get all projects", description = "Get all user projects")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public Set<ProjectResponseDto> getAllProjects() {
@@ -58,6 +63,7 @@ public class ProjectController {
         return projectService.getUsersProjects(userId);
     }
 
+    @Operation(summary = "Get project details", description = "Get details of user project by ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ProjectDetailsResponseDto getProjectDetails(@Positive @PathVariable Long id) {
@@ -66,6 +72,7 @@ public class ProjectController {
         return projectService.getProjectDetails(userId, id);
     }
 
+    @Operation(summary = "Update project", description = "Update project by its ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ProjectDetailsResponseDto updateProject(@Positive @PathVariable Long id,
@@ -76,6 +83,7 @@ public class ProjectController {
         return projectService.update(userId, id, requestDto);
     }
 
+    @Operation(summary = "Delete project", description = "Delete project by its ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteProject(@Positive @PathVariable Long id) {

@@ -5,6 +5,8 @@ import app.task.management.dto.user.UserRoleUpdateDto;
 import app.task.management.dto.user.UserUpdateDto;
 import app.task.management.model.User;
 import app.task.management.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "User management", description = "Endpoints for managing users")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "Get profile info", description = "Get all information about user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
     public UserDto getProfileInfo() {
@@ -34,6 +38,7 @@ public class UserController {
         return userService.getUserInfo(id);
     }
 
+    @Operation(summary = "Update profile info", description = "Update information about user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/me")
     public UserDto updateProfileInfo(@RequestBody @Valid UserUpdateDto updateDto) {
@@ -42,6 +47,7 @@ public class UserController {
         return userService.updateUserInfo(id, updateDto);
     }
 
+    @Operation(summary = "Update user role", description = "Update user role (Only for admins)")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/role")
     public void updateUserRole(@Positive @PathVariable Long id,
