@@ -4,6 +4,8 @@ import app.task.management.dto.attachment.AttachmentDto;
 import app.task.management.model.User;
 import app.task.management.service.AttachmentService;
 import app.task.management.service.EmailService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Positive;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Attachment management", description = "Endpoints for managing attachments")
 @RestController
 @RequestMapping("/api/attachments")
 @RequiredArgsConstructor
@@ -29,6 +32,8 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
     private final EmailService emailService;
 
+    @Operation(summary = "Upload attachment to task",
+            description = "Upload attachment to existing task and save it to Dropbox")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public AttachmentDto uploadAttachment(@RequestParam("file") MultipartFile file,
@@ -47,6 +52,8 @@ public class AttachmentController {
         return attachment;
     }
 
+    @Operation(summary = "Get attachments by task ID",
+            description = "Get all attachments by task ID from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{taskId}")
     public Set<AttachmentDto> getAttachmentsById(@PathVariable @Positive Long taskId) {
@@ -55,6 +62,8 @@ public class AttachmentController {
         return attachmentService.getAllByTaskId(taskId, userId);
     }
 
+    @Operation(summary = "Get attachment by its Dropbox ID",
+            description = "Get file by its Dropbox ID from Dropbox")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public Resource getAttachmentByDropboxFileId(@RequestParam ("dropboxFileId")
@@ -64,6 +73,8 @@ public class AttachmentController {
         return attachmentService.getByDropboxFileId(dropboxFileId, userId);
     }
 
+    @Operation(summary = "Delete attachment by ID",
+            description = "Delete attachment by ID from Dropbox and DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable @Positive Long id) {

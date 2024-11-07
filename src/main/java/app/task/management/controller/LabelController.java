@@ -4,6 +4,8 @@ import app.task.management.dto.label.CreateLabelDto;
 import app.task.management.dto.label.LabelResponseDto;
 import app.task.management.dto.label.UpdateLabelDto;
 import app.task.management.service.LabelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.Set;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Label management", description = "Endpoints for managing labels")
 @RestController
 @RequestMapping("/api/labels")
 @RequiredArgsConstructor
@@ -26,18 +29,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class LabelController {
     private final LabelService labelService;
 
+    @Operation(summary = "Create label", description = "Create a new label")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     LabelResponseDto createLabel(@Valid @RequestBody CreateLabelDto labelDto) {
         return labelService.save(labelDto);
     }
 
+    @Operation(summary = "Get all labels", description = "Get all labels from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     Set<LabelResponseDto> getAllLabels() {
         return labelService.getAll();
     }
 
+    @Operation(summary = "Update label", description = "Update an existing label")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     LabelResponseDto updateLabel(@Positive @PathVariable Long id,
@@ -45,6 +51,7 @@ public class LabelController {
         return labelService.updateLabel(id, labelDto);
     }
 
+    @Operation(summary = "Delete label", description = "Delete label by ID from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     void deleteLabel(@Positive @PathVariable Long id) {
