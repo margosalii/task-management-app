@@ -13,6 +13,7 @@ import app.task.management.repository.RoleRepository;
 import app.task.management.repository.UserRepository;
 import app.task.management.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,7 +53,8 @@ public class UserServiceImpl implements UserService {
                 () -> new EntityNotFoundException("Can't find user by ID: " + id)
         );
         Role role = roleRepository.findByName(updateDto.getRole());
-        user.getRoles().add(role);
+        Set<Role> roles = new HashSet<>(user.getRoles());
+        roles.add(role);
         userMapper.toDto(userRepository.save(user));
     }
 

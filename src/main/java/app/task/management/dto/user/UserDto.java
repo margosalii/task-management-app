@@ -1,10 +1,8 @@
 package app.task.management.dto.user;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class UserDto {
     private String username;
     private String email;
