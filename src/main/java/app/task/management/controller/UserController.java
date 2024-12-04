@@ -3,10 +3,11 @@ package app.task.management.controller;
 import app.task.management.dto.user.UserDto;
 import app.task.management.dto.user.UserRoleUpdateDto;
 import app.task.management.dto.user.UserUpdateDto;
-import app.task.management.model.User;
+import app.task.management.repository.UserRepository;
 import app.task.management.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +29,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Get profile info", description = "Get all information about user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
     public UserDto getProfileInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = ((User) authentication.getPrincipal()).getId();
-        return userService.getUserInfo(id);
+        Long userId = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
+                + authentication.getName())).getId();
+        return userService.getUserInfo(userId);
     }
 
     @Operation(summary = "Update profile info", description = "Update information about user")
@@ -43,8 +47,10 @@ public class UserController {
     @PutMapping("/me")
     public UserDto updateProfileInfo(@RequestBody @Valid UserUpdateDto updateDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = ((User) authentication.getPrincipal()).getId();
-        return userService.updateUserInfo(id, updateDto);
+        Long userId = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
+                + authentication.getName())).getId();
+        return userService.updateUserInfo(userId, updateDto);
     }
 
     @Operation(summary = "Update user role", description = "Update user role (Only for admins)")

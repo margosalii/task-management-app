@@ -1,11 +1,9 @@
 package app.task.management.dto.project;
 
 import app.task.management.model.Status;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ProjectResponseDto {
     private Long id;
     private String name;

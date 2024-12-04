@@ -3,11 +3,13 @@ package app.task.management.controller;
 import app.task.management.dto.comment.RequestCommentDto;
 import app.task.management.dto.comment.ResponseCommentDto;
 import app.task.management.model.User;
+import app.task.management.repository.UserRepository;
 import app.task.management.service.CommentService;
 import app.task.management.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.Set;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
     private final CommentService commentService;
     private final EmailService emailService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Add new comment", description = "Add new comment to existing task")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -38,7 +41,9 @@ public class CommentController {
     public ResponseCommentDto addComment(@RequestBody @Valid RequestCommentDto commentDto)
             throws MessagingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
+                + authentication.getName()));
         ResponseCommentDto comment = commentService.save(user.getId(), commentDto);
         if (comment != null) {
             emailService.sendEmail(user.getEmail(), "New comment!",
@@ -55,7 +60,9 @@ public class CommentController {
     @GetMapping("/{id}")
     public Set<ResponseCommentDto> getCommentsRelatedToTask(@Positive @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((User) authentication.getPrincipal()).getId();
+        Long userId = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
+                + authentication.getName())).getId();
         return commentService.getCommentsByTaskId(userId, id);
     }
 }
