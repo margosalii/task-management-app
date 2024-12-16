@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authentication management", description = "Endpoints for users authentication")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthenticationController {
@@ -29,13 +29,13 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
 
-    @Operation(summary = "Register user", description = "Register a new user")
+    @Operation(summary = "Login user", description = "Login an existing user")
     @PostMapping("/login")
     public UserLoginResponseDto login(@Valid @RequestBody UserLoginRequestDto loginRequestDto) {
         return authenticationService.authenticate(loginRequestDto);
     }
 
-    @Operation(summary = "Login user", description = "Login an existing user")
+    @Operation(summary = "Register user", description = "Register a new user")
     @PostMapping("/registration")
     public UserDto registration(@Valid @RequestBody UserRegistrationDto registrationDto)
             throws RegistrationException, MessagingException {

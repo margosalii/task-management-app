@@ -4,11 +4,10 @@ import app.task.management.dto.task.CreateTaskRequestDto;
 import app.task.management.dto.task.TaskDetailsDto;
 import app.task.management.dto.task.TaskResponseDto;
 import app.task.management.dto.task.UpdateTaskDto;
-import app.task.management.repository.UserRepository;
+import app.task.management.model.User;
 import app.task.management.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.Set;
@@ -28,21 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Task management", description = "Endpoints for managing tasks")
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/tasks")
 @RequiredArgsConstructor
 @Validated
 public class TaskController {
     private final TaskService taskService;
-    private final UserRepository userRepository;
 
     @Operation(summary = "Create task", description = "Create a new task")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public TaskDetailsDto createTask(@Valid @RequestBody CreateTaskRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.save(userId, requestDto);
     }
 
@@ -51,9 +47,7 @@ public class TaskController {
     @GetMapping
     public Set<TaskResponseDto> getAllTasks() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.getAllTasks(userId);
     }
 
@@ -62,9 +56,7 @@ public class TaskController {
     @GetMapping("/{id}")
     public TaskDetailsDto getTaskDetails(@Positive @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.getTaskDetails(userId, id);
     }
 
@@ -74,9 +66,7 @@ public class TaskController {
     public TaskDetailsDto updateTask(@Positive @PathVariable Long id,
                                      @RequestBody @Valid UpdateTaskDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.updateTask(userId, id, requestDto);
     }
 
@@ -85,9 +75,7 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public void deleteTask(@Positive @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         taskService.delete(userId, id);
     }
 }

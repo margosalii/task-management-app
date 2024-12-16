@@ -10,20 +10,16 @@ import app.task.management.dto.user.UserRoleUpdateDto;
 import app.task.management.dto.user.UserUpdateDto;
 import app.task.management.model.RoleName;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Connection;
 import javax.sql.DataSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -46,26 +42,16 @@ class UserControllerTest {
             .build();
     }
 
-    private static void executeSqlScript(DataSource dataSource, String scriptPath)
-            throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource(scriptPath));
-        }
-    }
-
-    @BeforeEach
-    void beforeEach(@Autowired DataSource dataSource) throws Exception {
-        executeSqlScript(dataSource, "database/users/add-users.sql");
-    }
-
-    @AfterEach
-    void afterEach(@Autowired DataSource dataSource) throws Exception {
-        executeSqlScript(dataSource, "database/users/delete-users.sql");
-    }
-
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
+    @Sql(
+            scripts = "classpath:database/users/add-users.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/users/delete-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
     @DisplayName("Get profile info")
     void getUserInfo_ok() throws Exception {
         UserDto expected = new UserDto();
@@ -75,7 +61,7 @@ class UserControllerTest {
         expected.setEmail("admin@gmail.com");
 
         MvcResult result = mockMvc.perform(
-                get("/api/users/me")
+                get("/users/me")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk())
@@ -87,8 +73,16 @@ class UserControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
+    @Sql(
+            scripts = "classpath:database/users/add-users.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/users/delete-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
     @DisplayName("Update profile info")
     void updateProfileInfo_ok() throws Exception {
         UserUpdateDto requestDto = new UserUpdateDto();
@@ -105,7 +99,7 @@ class UserControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(
-                put("/api/users/me")
+                put("/users/me")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -118,8 +112,16 @@ class UserControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
+    @Sql(
+            scripts = "classpath:database/users/add-users.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/users/delete-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
     @DisplayName("Update user role")
     void updateUserRole_validRequest_ok() throws Exception {
         UserRoleUpdateDto requestDto = new UserRoleUpdateDto();
@@ -128,7 +130,7 @@ class UserControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         mockMvc.perform(
-                put("/api/users/4/role")
+                put("/users/4/role")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON)
             )

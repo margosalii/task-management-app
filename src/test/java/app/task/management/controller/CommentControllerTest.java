@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -62,7 +62,7 @@ class CommentControllerTest {
         executeSqlScript(dataSource, "database/users/delete-users.sql");
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/tasks/add-tasks.sql",
@@ -87,7 +87,7 @@ class CommentControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(
-                post("/api/comments")
+                post("/comments")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -103,7 +103,7 @@ class CommentControllerTest {
         Assertions.assertEquals(expected.getText(), actual.getText());
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = {
@@ -129,7 +129,7 @@ class CommentControllerTest {
         expected.add(firstComment);
 
         MvcResult result = mockMvc.perform(
-                get("/api/comments/1")
+                get("/comments/1")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk())

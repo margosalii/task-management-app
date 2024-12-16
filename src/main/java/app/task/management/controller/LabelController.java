@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Label management", description = "Endpoints for managing labels")
 @RestController
-@RequestMapping("/api/labels")
+@RequestMapping("/labels")
 @RequiredArgsConstructor
 @Validated
 public class LabelController {
@@ -32,21 +32,21 @@ public class LabelController {
     @Operation(summary = "Create label", description = "Create a new label")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
-    LabelResponseDto createLabel(@Valid @RequestBody CreateLabelDto labelDto) {
+    public LabelResponseDto createLabel(@Valid @RequestBody CreateLabelDto labelDto) {
         return labelService.save(labelDto);
     }
 
     @Operation(summary = "Get all labels", description = "Get all labels from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
-    Set<LabelResponseDto> getAllLabels() {
+    public Set<LabelResponseDto> getAllLabels() {
         return labelService.getAll();
     }
 
     @Operation(summary = "Update label", description = "Update an existing label")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
-    LabelResponseDto updateLabel(@Positive @PathVariable Long id,
+    public LabelResponseDto updateLabel(@Positive @PathVariable Long id,
                                  @Valid @RequestBody UpdateLabelDto labelDto) {
         return labelService.updateLabel(id, labelDto);
     }
@@ -54,7 +54,7 @@ public class LabelController {
     @Operation(summary = "Delete label", description = "Delete label by ID from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    void deleteLabel(@Positive @PathVariable Long id) {
+    public void deleteLabel(@Positive @PathVariable Long id) {
         labelService.delete(id);
     }
 }

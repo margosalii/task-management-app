@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -103,7 +103,7 @@ class ProjectControllerTest {
         }
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @DisplayName("Create a new project")
     void createProject_validRequestDto_ok() throws Exception {
@@ -123,7 +123,7 @@ class ProjectControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(projectDto);
 
         MvcResult result = mockMvc.perform(
-                post("/api/projects")
+                post("/projects")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -138,7 +138,7 @@ class ProjectControllerTest {
         EqualsBuilder.reflectionEquals(expected, actual, "id");
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/projects/add-projects.sql",
@@ -153,7 +153,7 @@ class ProjectControllerTest {
         Set<ProjectResponseDto> expected = projectResponseDtos;
 
         MvcResult result = mockMvc.perform(
-                get("/api/projects").contentType(MediaType.APPLICATION_JSON))
+                get("/projects").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -166,7 +166,7 @@ class ProjectControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/projects/add-projects.sql",
@@ -181,7 +181,7 @@ class ProjectControllerTest {
         ProjectDetailsResponseDto expected = detailsResponseDto;
 
         MvcResult result = mockMvc.perform(
-                get("/api/projects/1").contentType(MediaType.APPLICATION_JSON))
+                get("/projects/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -192,7 +192,7 @@ class ProjectControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/projects/add-projects.sql",
@@ -222,7 +222,7 @@ class ProjectControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(request);
 
-        MvcResult result = mockMvc.perform(put("/api/projects/1")
+        MvcResult result = mockMvc.perform(put("/projects/1")
                 .content(jsonRequest)
                 .contentType(MediaType.APPLICATION_JSON)
             )
@@ -235,7 +235,7 @@ class ProjectControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/projects/add-projects.sql",
@@ -247,7 +247,7 @@ class ProjectControllerTest {
     )
     @DisplayName("Delete project by ID")
     void deleteProjectById_ok() throws Exception {
-        mockMvc.perform(delete("/api/projects/1")
+        mockMvc.perform(delete("/projects/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
