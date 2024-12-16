@@ -20,6 +20,7 @@ public class CreateTaskRequestDto {
     @NotNull
     private LocalDate dueDate;
 
+    @NotNull
     @Positive
     private Long projectId;
 }

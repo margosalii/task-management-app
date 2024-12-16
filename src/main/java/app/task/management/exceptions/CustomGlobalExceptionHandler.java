@@ -55,18 +55,18 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             EntityNotFoundException exception) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(TIMESTAMP, LocalDateTime.now());
-        body.put(STATUS, HttpStatus.CONFLICT);
+        body.put(STATUS, HttpStatus.NOT_FOUND);
         body.put(ERRORS, exception.getLocalizedMessage());
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DropboxException.class)
     protected ResponseEntity<Object> handleDropboxException(DropboxException exception) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(TIMESTAMP, LocalDateTime.now());
-        body.put(STATUS, HttpStatus.CONFLICT);
+        body.put(STATUS, HttpStatus.BAD_REQUEST);
         body.put(ERRORS, exception.getLocalizedMessage());
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     private String getErrorMessage(ObjectError objectError) {

@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -109,7 +109,7 @@ class TaskControllerTest {
         }
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/projects/add-projects.sql",
@@ -138,7 +138,7 @@ class TaskControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(
-                post("/api/tasks")
+                post("/tasks")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -153,7 +153,7 @@ class TaskControllerTest {
         EqualsBuilder.reflectionEquals(expected, actual, "id");
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Test
     @Sql(
             scripts = "classpath:database/tasks/add-tasks.sql",
@@ -168,7 +168,7 @@ class TaskControllerTest {
         Set<TaskResponseDto> expected = responseDtos;
 
         MvcResult result = mockMvc.perform(
-                get("/api/tasks")
+                get("/tasks")
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -182,7 +182,7 @@ class TaskControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Sql(
             scripts = "classpath:database/tasks/add-tasks.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -197,7 +197,7 @@ class TaskControllerTest {
         TaskDetailsDto expected = detailsDto;
 
         MvcResult result = mockMvc.perform(
-                get("/api/tasks/1")
+                get("/tasks/1")
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -209,7 +209,7 @@ class TaskControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Sql(
             scripts = "classpath:database/tasks/add-tasks.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -240,7 +240,7 @@ class TaskControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(request);
 
         MvcResult result = mockMvc.perform(
-                put("/api/tasks/1")
+                put("/tasks/1")
                     .content(jsonRequest)
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -253,7 +253,7 @@ class TaskControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithUserDetails(value = "admin")
     @Sql(
             scripts = "classpath:database/tasks/add-tasks.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -266,7 +266,7 @@ class TaskControllerTest {
     @DisplayName("Delete task")
     void deleteTask_validRequest_ok() throws Exception {
         MvcResult result = mockMvc.perform(
-                delete("/api/tasks/1")
+                delete("/tasks/1")
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

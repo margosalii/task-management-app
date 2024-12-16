@@ -11,7 +11,6 @@ import app.task.management.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.Set;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Project management", description = "Endpoints for managing projects")
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping("/projects")
 @RequiredArgsConstructor
 @Validated
 public class ProjectController {
@@ -46,9 +45,7 @@ public class ProjectController {
                                                        CreateProjectDto projectDto)
             throws MessagingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName()));
+        User user = (User) authentication.getPrincipal();
         ProjectDetailsResponseDto savedProject = projectService.save(user.getId(), projectDto);
         if (savedProject != null) {
             emailService.sendEmail(user.getEmail(), "New project!",
@@ -64,9 +61,7 @@ public class ProjectController {
     @GetMapping
     public Set<ProjectResponseDto> getAllProjects() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.getUsersProjects(userId);
     }
 
@@ -75,9 +70,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ProjectDetailsResponseDto getProjectDetails(@Positive @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.getProjectDetails(userId, id);
     }
 
@@ -88,9 +81,7 @@ public class ProjectController {
                                                    @RequestBody @Valid
                                                    UpdateRequestProjectDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.update(userId, id, requestDto);
     }
 
@@ -99,9 +90,7 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public void deleteProject(@Positive @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by username: "
-                + authentication.getName())).getId();
+        Long userId = ((User) authentication.getPrincipal()).getId();
         projectService.delete(userId, id);
     }
 }
