@@ -14,7 +14,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,9 +34,9 @@ public class CommentController {
     @Operation(summary = "Add new comment", description = "Add new comment to existing task")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
-    public ResponseCommentDto addComment(@RequestBody @Valid RequestCommentDto commentDto)
+    public ResponseCommentDto addComment(@RequestBody @Valid RequestCommentDto commentDto,
+                                         Authentication authentication)
             throws MessagingException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         ResponseCommentDto comment = commentService.save(user.getId(), commentDto);
         if (comment != null) {
@@ -53,8 +52,8 @@ public class CommentController {
             description = "Get all comments related to task ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public Set<ResponseCommentDto> getCommentsRelatedToTask(@Positive @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Set<ResponseCommentDto> getCommentsRelatedToTask(@Positive @PathVariable Long id,
+                                                            Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return commentService.getCommentsByTaskId(userId, id);
     }

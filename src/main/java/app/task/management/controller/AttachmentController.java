@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,9 +36,9 @@ public class AttachmentController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public AttachmentDto uploadAttachment(@RequestParam("file") MultipartFile file,
-                                          @RequestParam("taskId") Long taskId)
+                                          @RequestParam("taskId") Long taskId,
+                                          Authentication authentication)
             throws IOException, MessagingException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         AttachmentDto attachment = attachmentService.upload(file, taskId, user.getId());
         if (attachment != null) {
@@ -56,8 +55,8 @@ public class AttachmentController {
             description = "Get all attachments by task ID from DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{taskId}")
-    public Set<AttachmentDto> getAttachmentsById(@PathVariable @Positive Long taskId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Set<AttachmentDto> getAttachmentsById(@PathVariable @Positive Long taskId,
+                                                 Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return attachmentService.getAllByTaskId(taskId, userId);
     }
@@ -67,8 +66,8 @@ public class AttachmentController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public Resource getAttachmentByDropboxFileId(@RequestParam ("dropboxFileId")
-                                                     String dropboxFileId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                                                     String dropboxFileId,
+                                                 Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return attachmentService.getByDropboxFileId(dropboxFileId, userId);
     }
@@ -77,8 +76,8 @@ public class AttachmentController {
             description = "Delete attachment by ID from Dropbox and DB")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable @Positive Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public void delete(@PathVariable @Positive Long id,
+                       Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         attachmentService.delete(id, userId);
     }

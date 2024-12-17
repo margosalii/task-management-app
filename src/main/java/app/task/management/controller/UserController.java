@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +31,7 @@ public class UserController {
     @Operation(summary = "Get profile info", description = "Get all information about user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
-    public UserDto getProfileInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public UserDto getProfileInfo(Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return userService.getUserInfo(userId);
     }
@@ -41,8 +39,8 @@ public class UserController {
     @Operation(summary = "Update profile info", description = "Update information about user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/me")
-    public UserDto updateProfileInfo(@RequestBody @Valid UserUpdateDto updateDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public UserDto updateProfileInfo(@RequestBody @Valid UserUpdateDto updateDto,
+                                     Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return userService.updateUserInfo(userId, updateDto);
     }

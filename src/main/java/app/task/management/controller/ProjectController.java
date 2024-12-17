@@ -17,7 +17,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,9 +41,9 @@ public class ProjectController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ProjectDetailsResponseDto createProject(@RequestBody @Valid
-                                                       CreateProjectDto projectDto)
+                                                       CreateProjectDto projectDto,
+                                                   Authentication authentication)
             throws MessagingException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         ProjectDetailsResponseDto savedProject = projectService.save(user.getId(), projectDto);
         if (savedProject != null) {
@@ -59,8 +58,7 @@ public class ProjectController {
     @Operation(summary = "Get all projects", description = "Get all user projects")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
-    public Set<ProjectResponseDto> getAllProjects() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Set<ProjectResponseDto> getAllProjects(Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.getUsersProjects(userId);
     }
@@ -68,8 +66,8 @@ public class ProjectController {
     @Operation(summary = "Get project details", description = "Get details of user project by ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ProjectDetailsResponseDto getProjectDetails(@Positive @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ProjectDetailsResponseDto getProjectDetails(@Positive @PathVariable Long id,
+                                                       Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.getProjectDetails(userId, id);
     }
@@ -79,8 +77,8 @@ public class ProjectController {
     @PutMapping("/{id}")
     public ProjectDetailsResponseDto updateProject(@Positive @PathVariable Long id,
                                                    @RequestBody @Valid
-                                                   UpdateRequestProjectDto requestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                                                   UpdateRequestProjectDto requestDto,
+                                                   Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return projectService.update(userId, id, requestDto);
     }
@@ -88,8 +86,8 @@ public class ProjectController {
     @Operation(summary = "Delete project", description = "Delete project by its ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteProject(@Positive @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public void deleteProject(@Positive @PathVariable Long id,
+                              Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         projectService.delete(userId, id);
     }
