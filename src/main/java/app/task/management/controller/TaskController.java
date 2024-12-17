@@ -14,7 +14,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +35,8 @@ public class TaskController {
     @Operation(summary = "Create task", description = "Create a new task")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
-    public TaskDetailsDto createTask(@Valid @RequestBody CreateTaskRequestDto requestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public TaskDetailsDto createTask(@Valid @RequestBody CreateTaskRequestDto requestDto,
+                                     Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.save(userId, requestDto);
     }
@@ -45,8 +44,7 @@ public class TaskController {
     @Operation(summary = "Get all tasks", description = "Get all user tasks")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
-    public Set<TaskResponseDto> getAllTasks() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Set<TaskResponseDto> getAllTasks(Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.getAllTasks(userId);
     }
@@ -54,8 +52,8 @@ public class TaskController {
     @Operation(summary = "Get task details", description = "Get task details by its ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public TaskDetailsDto getTaskDetails(@Positive @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public TaskDetailsDto getTaskDetails(@Positive @PathVariable Long id,
+                                         Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.getTaskDetails(userId, id);
     }
@@ -64,8 +62,8 @@ public class TaskController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public TaskDetailsDto updateTask(@Positive @PathVariable Long id,
-                                     @RequestBody @Valid UpdateTaskDto requestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                                     @RequestBody @Valid UpdateTaskDto requestDto,
+                                     Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         return taskService.updateTask(userId, id, requestDto);
     }
@@ -73,8 +71,8 @@ public class TaskController {
     @Operation(summary = "Delete task", description = "Delete task by its ID")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteTask(@Positive @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public void deleteTask(@Positive @PathVariable Long id,
+                           Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
         taskService.delete(userId, id);
     }
